@@ -4,12 +4,15 @@ import {FilterValuesType, TaskType} from "./App";
 type TodolistPropsType = {
     title: string
     tasks: TaskType[]
+    filter: FilterValuesType
     addTask: (title: string) => void
     removeTask: (taskId: string) => void
     changeFilter: (nextFilter: FilterValuesType) => void
+    changeTaskStatus: (taskId: string, newIsDoneValue: boolean) => void
 }
 export const Todolist: FC<TodolistPropsType> = (props) => {
     const [title, setTitle] = useState("")
+    const [error, setError] = useState<boolean>(false)
     // const taskTitleInput = useRef<HTMLInputElement>(null)
     // const addTaskHandler =  () => {
     //     if(taskTitleInput.current){
@@ -19,10 +22,18 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
     // }
     //
 
-    const setTitleHandler = (event: ChangeEvent<HTMLInputElement>) => setTitle(event.currentTarget.value)
+    const setTitleHandler = (event: ChangeEvent<HTMLInputElement>) => {
+       error && setError(false)
+        setTitle(event.currentTarget.value)
+    }
 
     const addTaskHandler = () => {
-        props.addTask(title)
+        const trimmedTitle = title.trim()
+        if(trimmedTitle){
+            props.addTask(trimmedTitle)
+        }else {
+            setError(true)
+        }
         setTitle("")
     }
     const titleMaxLength = 25
@@ -38,17 +49,28 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
     }
 
     const titleMaxLengthWarning = isTitleLengthTooLong
-    ? <div style={{color: 'red'}}>Title is too long</div>
+        ? <div style={{color: 'red'}}>Title is too long</div>
         : null
-const handlerCreator = (filter: FilterValuesType) => () => props.changeFilter
-    const addTaskOnKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" &&  !isAddBtnDisabled && addTaskHandler()
-
+    const userMessage = error
+        ? <div style={{color: 'red'}}>Title is required</div>
+: null
+    const handlerCreator = (filter: FilterValuesType) => () => props.changeFilter(filter)
+    const addTaskOnKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && !isAddBtnDisabled && addTaskHandler()
     const mappedTask: Array<JSX.Element> = props.tasks.map((t) => {
+        const removeTask = () => props.removeTask(t.id)
+        const changeTaskStatus = (event: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(t.id, event.currentTarget.checked)
+        const taskClasses = t.isDone ? "task-not-isDone" : "task"
         return (
             <li key={t.id}>
-                <input type="checkbox" checked={t.isDone}/>
-                <span>{t.title}</span>
-                <button onClick={() => props.removeTask(t.id)}>x</button>
+                <div>
+                <input
+                    type="checkbox"
+                    checked={t.isDone}
+                    onChange={changeTaskStatus}
+                />
+                <span className={taskClasses}>{t.title}</span>
+                </div>
+                    <button onClick={removeTask}>x</button>
             </li>
 
         )
@@ -65,6 +87,7 @@ const handlerCreator = (filter: FilterValuesType) => () => props.changeFilter
                     value={title}
                     onChange={setTitleHandler}
                     onKeyDown={addTaskOnKeyPressHandler}
+                    className={error || isTitleLengthTooLong ? "input-error" : undefined}
                     //ref={taskTitleInput}
                 />
                 <button
@@ -74,16 +97,30 @@ const handlerCreator = (filter: FilterValuesType) => () => props.changeFilter
                 > +
                 </button>
                 {titleMaxLengthWarning}
-
+                {userMessage}
             </div>
             <ul>
                 {mappedTask}
             </ul>
-            <div>
-                <button onClick={handlerCreator("all")}>All</button>
-                <button onClick={handlerCreator("active")}>Active</button>
-                <button onClick={handlerCreator("completed")}>Completed</button>
+
+            <div className={"filter-btn-wrapper"}>
+                <button
+                    className={props.filter === "all"
+                        ? "filter-btn filter-btn-active"
+                        : "filter-btn"}
+                        onClick={handlerCreator("all")}>All</button>
+                <button
+                    className={props.filter === "active"
+                        ? "filter-btn filter-btn-active"
+                        : "filter-btn"}
+                    onClick={handlerCreator("active")}>Active</button>
+                <button
+                    className={props.filter === "completed"
+                        ? "filter-btn filter-btn-active"
+                        : "filter-btn"}
+                    onClick={handlerCreator("completed")}>Completed</button>
             </div>
+
         </div>
     );
 };
