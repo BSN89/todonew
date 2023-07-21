@@ -2,13 +2,16 @@ import React, {ChangeEvent, KeyboardEvent, FC, JSX, useRef, useState} from 'reac
 import {FilterValuesType, TaskType} from "./App";
 
 type TodolistPropsType = {
+    todolistId: string
     title: string
     tasks: TaskType[]
     filter: FilterValuesType
-    addTask: (title: string) => void
-    removeTask: (taskId: string) => void
-    changeFilter: (nextFilter: FilterValuesType) => void
-    changeTaskStatus: (taskId: string, newIsDoneValue: boolean) => void
+
+    addTask: (title: string, todoListId: string) => void
+    removeTask: (taskId: string, todoListId: string) => void
+    changeTaskStatus: (taskId: string, newIsDoneValue: boolean, todoListId: string) => void
+    removeTodoList: (todoListsId: string) => void
+    changeTodoListFilter: (nextFilter: FilterValuesType, todoListId: string) => void
 }
 export const Todolist: FC<TodolistPropsType> = (props) => {
     const [title, setTitle] = useState("")
@@ -23,23 +26,25 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
     //
 
     const setTitleHandler = (event: ChangeEvent<HTMLInputElement>) => {
-       error && setError(false)
+        error && setError(false)
         setTitle(event.currentTarget.value)
     }
 
     const addTaskHandler = () => {
         const trimmedTitle = title.trim()
-        if(trimmedTitle){
-            props.addTask(trimmedTitle)
-        }else {
+        if (trimmedTitle) {
+            props.addTask(trimmedTitle, props.todolistId)
+        } else {
             setError(true)
         }
         setTitle("")
     }
+    const handlerCreator = (filter: FilterValuesType) => () => props.changeTodoListFilter(filter, props.todolistId)
+    const addTaskOnKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && !isAddBtnDisabled && addTaskHandler()
+const removeTodoListHandler = () => {props.removeTodoList(props.todolistId)}
+
     const titleMaxLength = 25
-
     const isTitleLengthTooLong: boolean = title.length > titleMaxLength
-
     const isAddBtnDisabled: boolean = !title.length || isTitleLengthTooLong
     let isAllTasksNotIsDone = true
     for (let i = 0; i < props.tasks.length; i++) {
@@ -47,30 +52,27 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
             isAllTasksNotIsDone = false
         }
     }
-
     const titleMaxLengthWarning = isTitleLengthTooLong
         ? <div style={{color: 'red'}}>Title is too long</div>
         : null
     const userMessage = error
         ? <div style={{color: 'red'}}>Title is required</div>
-: null
-    const handlerCreator = (filter: FilterValuesType) => () => props.changeFilter(filter)
-    const addTaskOnKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && !isAddBtnDisabled && addTaskHandler()
+        : null
     const mappedTask: Array<JSX.Element> = props.tasks.map((t) => {
-        const removeTask = () => props.removeTask(t.id)
-        const changeTaskStatus = (event: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(t.id, event.currentTarget.checked)
+        const removeTask = () => props.removeTask(t.id, props.todolistId)
+        const changeTaskStatus = (event: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(t.id, event.currentTarget.checked, props.todolistId)
         const taskClasses = t.isDone ? "task-not-isDone" : "task"
         return (
             <li key={t.id}>
                 <div>
-                <input
-                    type="checkbox"
-                    checked={t.isDone}
-                    onChange={changeTaskStatus}
-                />
-                <span className={taskClasses}>{t.title}</span>
+                    <input
+                        type="checkbox"
+                        checked={t.isDone}
+                        onChange={changeTaskStatus}
+                    />
+                    <span className={taskClasses}>{t.title}</span>
                 </div>
-                    <button onClick={removeTask}>x</button>
+                <button onClick={removeTask}>x</button>
             </li>
 
         )
@@ -80,7 +82,10 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
     const todoClasses = isAllTasksNotIsDone ? "todolist-empty" : "todolist"
     return (
         <div className={todoClasses}>
-            <h3>{props.title}</h3>
+            <h2>
+                {props.title}
+                <button onClick={removeTodoListHandler}>x</button>
+            </h2>
             <div>
                 <input
                     placeholder={"Please, enter title"}
@@ -108,17 +113,20 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
                     className={props.filter === "all"
                         ? "filter-btn filter-btn-active"
                         : "filter-btn"}
-                        onClick={handlerCreator("all")}>All</button>
+                    onClick={handlerCreator("all")}>All
+                </button>
                 <button
                     className={props.filter === "active"
                         ? "filter-btn filter-btn-active"
                         : "filter-btn"}
-                    onClick={handlerCreator("active")}>Active</button>
+                    onClick={handlerCreator("active")}>Active
+                </button>
                 <button
                     className={props.filter === "completed"
                         ? "filter-btn filter-btn-active"
                         : "filter-btn"}
-                    onClick={handlerCreator("completed")}>Completed</button>
+                    onClick={handlerCreator("completed")}>Completed
+                </button>
             </div>
 
         </div>
