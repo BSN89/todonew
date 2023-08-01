@@ -63,3 +63,11 @@ h3{
   border: 2px solid red;
   outline: none;
 }
+.add-form{
+  background-color: darkseagreen;
+  max-height: 2rem;
+  border: 2px solid burlywood;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 20px 0 black;
+}
