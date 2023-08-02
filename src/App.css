@@ -3,14 +3,14 @@ body{
 
 }
 
-.App {
-  padding: 30px;
-  display: flex;
-}
+/*.App {*/
+/*  padding: 30px;*/
+/*  display: flex;*/
+/*}*/
 
-.App > div {
-  margin-right: 50px;
-}
+/*.App > div {*/
+/*  margin-right: 50px;*/
+/*}*/
 .todolist {
   border: 2px solid burlywood;
   border-radius: 5px;
@@ -65,9 +65,13 @@ h3{
 }
 .add-form{
   background-color: darkseagreen;
-  max-height: 2rem;
+  min-height: fit-content;
   border: 2px solid burlywood;
   border-radius: 5px;
   padding: 20px;
   box-shadow: 0 0 20px 0 black;
+}
+.form-wrapper {
+  display: flex;
+  align-items: center;
 }

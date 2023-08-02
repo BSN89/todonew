@@ -2,7 +2,8 @@ import React, {ChangeEvent, FC, JSX} from 'react';
 import {FilterValuesType, TaskType} from "./App";
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
-
+import {Button, Checkbox, IconButton} from "@mui/material";
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 type TodolistPropsType = {
     todolistId: string
     title: string
@@ -53,14 +54,18 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
         return (
             <li key={t.id}>
                 <div>
-                    <input
-                        type="checkbox"
+                    <Checkbox
+                        size={"small"}
                         checked={t.isDone}
                         onChange={changeTaskStatus}
                     />
                     <EditableSpan title={t.title} classes={taskClasses} changeTitle={changeTaskTitle}/>
                 </div>
-                <button onClick={removeTask}>x</button>
+                <IconButton
+                    size={"small"}
+                    onClick={removeTask}>
+                    <DeleteForeverRoundedIcon/>
+                </IconButton>
             </li>
 
         )
@@ -73,7 +78,11 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
             <h2>
 
                 <EditableSpan title={props.title}  changeTitle={changeTodoListTitle}/>
-                <button onClick={removeTodoListHandler}>x</button>
+                <IconButton
+                    size={"small"}
+                    onClick={removeTodoListHandler}>
+                    <DeleteForeverRoundedIcon/>
+                </IconButton>
             </h2>
 
             <AddItemForm titleMaxLength={25} addItem={addTask}/>
@@ -83,24 +92,24 @@ export const Todolist: FC<TodolistPropsType> = (props) => {
             </ul>
 
             <div className={"filter-btn-wrapper"}>
-                <button
-                    className={props.filter === "all"
-                        ? "filter-btn filter-btn-active"
-                        : "filter-btn"}
+                <Button
+                    size={"small"}
+                    variant={"contained"}
+                    color={props.filter === "all" ? "primary" : "success"}
                     onClick={handlerCreator("all")}>All
-                </button>
-                <button
-                    className={props.filter === "active"
-                        ? "filter-btn filter-btn-active"
-                        : "filter-btn"}
+                </Button>
+                <Button
+                    size={"small"}
+                    variant={"contained"}
+                    color={props.filter === "active" ? "primary" : "success"}
                     onClick={handlerCreator("active")}>Active
-                </button>
-                <button
-                    className={props.filter === "completed"
-                        ? "filter-btn filter-btn-active"
-                        : "filter-btn"}
+                </Button>
+                <Button
+                    size={"small"}
+                    variant={"contained"}
+                    color={props.filter === "completed" ? "primary" : "success"}
                     onClick={handlerCreator("completed")}>Completed
-                </button>
+                </Button>
             </div>
         </div>
     );

@@ -1,4 +1,6 @@
 import React, {ChangeEvent, FC, KeyboardEvent, useState} from 'react';
+import {IconButton, TextField} from "@mui/material";
+import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 
 
 type AddItemFormPropsType = {
@@ -44,7 +46,8 @@ export const AddItemForm: FC<AddItemFormPropsType> = (props) => {
 const inputClasses = error || isTitleLengthTooLong ? "input-error" : undefined
     return (
         <div className="add-form">
-            <input
+            <TextField
+                size={"small"}
                 placeholder={"Please, enter title"}
                 value={title}
                 onChange={setTitleHandler}
@@ -52,11 +55,13 @@ const inputClasses = error || isTitleLengthTooLong ? "input-error" : undefined
                 onKeyDown={addTaskOnKeyPressHandler}
                 className={inputClasses}
             />
-            <button
+
+            <IconButton
+                size={"small"}
                 disabled={isAddBtnDisabled}
-                onClick={addItemHandler}
-            > +
-            </button>
+                onClick={addItemHandler}>
+                <BorderColorRoundedIcon/>
+            </IconButton>
             {titleMaxLengthWarning || userMessage}
 
         </div>
