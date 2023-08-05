@@ -23,7 +23,7 @@ export type TaskType = {
     title: string
     isDone: boolean
 }
-type TodolistType = {
+export type TodolistType = {
     id: string
     title: string
     filter: FilterValuesType
@@ -100,13 +100,14 @@ const [isLightMode, setIsLightMode] = useState<boolean>(true)
         setTasks(copy)
     }
     const addTodoList = (title: string) => {
+        const newTodoId = v1()
         const newTodo: TodolistType = {
-            id: v1(),
+            id: newTodoId,
             title: title,
             filter: 'all'
         }
         setTodoLists([...todoLists, newTodo])
-        setTasks({...tasks, [newTodo.id]: []})
+        setTasks({...tasks, [newTodoId]: []})
     }
     const changeTodoListTitle = (title: string, todoListId: string) => {
         setTodoLists(todoLists.map(tl => tl.id === todoListId
